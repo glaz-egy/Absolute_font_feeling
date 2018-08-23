@@ -56,3 +56,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# No upload data
+.jpg
+.ttc
