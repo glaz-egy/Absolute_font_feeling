@@ -5,43 +5,71 @@ import os
 import numpy as np
 from PIL import Image
 
+font2num = {'HGRSGU':0,
+            'JGTR00M':1,
+            'meiryo':2,
+            'msgothic':3,
+            'UDDigiKyokashoN-R':4,
+            'YuGothL':5,
+            'DFJHSGW5':6,
+            'HGRGE':7,
+            'HGRGM':8,
+            'HGRPRE':9}
+
+num2font = np.array(['HGRSGU', 'JGTR00M', 'meiryo', 'msgothic', 'UDDigiKyokashoN-R', 'YuGothL', 'DFJHSGW5', 'HGRGE', 'HGRGM', 'HGRPRE'])
+
 dataset_dir = os.path.dirname(os.path.abspath(__file__))
 save_file = dataset_dir + "/mydataset.pkl"
 
-font_name = ('meiryo','ms_gothic')
+font_list = []
+for name in os.listdir('fonts'):
+    font_list.append(os.path.splitext(name)[0])
 
 train_num = 60000
 test_num = 10000
 img_dim = (1, 28, 28)
-img_size = 10000
+img_size = 784
 
-def _load_label():
+def _load_label(train=False):
     label_list = []
-
-    for name in font_name:
-        for num in range(1, 901):
-            label_list.append(name)
+    for name in font_list:
+        if train:
+            for num in range(1, len(os.listdir('datas/'+name))+1):
+                label_list.append(font2num[name])
+        else:
+            for num in range(1, len(os.listdir('testdata/'+name))+1):
+                label_list.append(font2num[name])
+        print("Load label Done: {}".format(name))
     labels = np.array(label_list)
+    print(len(label_list))
     print("Done")
 
     return labels
 
-def _load_img():
+def _load_img(train=False):
     data_list = []
 
-    for name in font_name:
-        for num in range(1, 901):
-            data_list.append(np.array(Image.open('datas/'+name+'/'+str(num).zfill(5)+'.jpg')))
+    for name in font_list:
+        if train:
+            for num in range(1, len(os.listdir('gray_datas/'+name))+1):
+                data_list.append(np.array(Image.open('gray_datas/'+name+'/'+str(num).zfill(7)+'.jpg')))
+        else:
+            for num in range(1, len(os.listdir('gray_testdata/'+name))+1):
+                data_list.append(np.array(Image.open('gray_testdata/'+name+'/'+str(num)+'.jpg')))
+        print("Load image Done: {}".format(name))
     data = np.array(data_list)
     data = data.reshape(-1, img_size)
+    print(len(data_list))
     print("Done")
 
     return data
 
 def _convert_numpy():
     dataset = {}
-    dataset['img'] =  _load_img()
-    dataset['label'] = _load_label()
+    dataset['train_img'] =  _load_img(train=True)
+    dataset['train_label'] = _load_label(train=True)
+    dataset['test_img'] = _load_img(train=False)
+    dataset['test_label'] = _load_label(train=False)
 
     return dataset
 
@@ -60,7 +88,7 @@ def _change_one_hot_label(X):
     return T
 
 
-def load_mnist(normalize=True, flatten=True, one_hot_label=False):
+def load_mydata(normalize=True, flatten=True):
     """MNISTデータセットの読み込み
 
     Parameters
@@ -86,15 +114,11 @@ def load_mnist(normalize=True, flatten=True, one_hot_label=False):
             dataset[key] = dataset[key].astype(np.float32)
             dataset[key] /= 255.0
 
-    if one_hot_label:
-        dataset['train_label'] = _change_one_hot_label(dataset['train_label'])
-        dataset['test_label'] = _change_one_hot_label(dataset['test_label'])
-
     if not flatten:
          for key in ('train_img', 'test_img'):
-            dataset[key] = dataset[key].reshape(-1, 1, 100, 100)
+            dataset[key] = dataset[key].reshape(-1, 1, 28, 28)
 
-    return (dataset['img'], dataset['label'])
+    return (dataset['train_img'], dataset['train_label']), (dataset['test_img'], dataset['test_label'])
 
 
 if __name__ == '__main__':
