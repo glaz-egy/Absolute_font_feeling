@@ -58,5 +58,5 @@ docs/_build/
 target/
 
 # No upload data
-.jpg
-.ttc
+*.jpg
+*.ttc
