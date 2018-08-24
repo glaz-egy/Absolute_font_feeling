@@ -40,12 +40,10 @@ def _load_label(train=False):
         for num in range(1, file_num):
             for name in font_list:
                 label_list.append(font2num[name])
-            print("Load train label Done: {}".format(name))
     else:
         for num in range(1, len(os.listdir('testdata/'+font_list[0]))+1):
             for name in font_list:
                 label_list.append(font2num[name])
-            print("Load test label Done: {}".format(name))
     labels = np.array(label_list)
     print("Done")
 
@@ -60,14 +58,10 @@ def _load_img(train=False):
         for num in range(1, file_num):
             for name in font_list:
                 data_list.append(np.array(Image.open('gray_datas/'+name+'/'+str(num).zfill(7)+'.jpg')))
-            if num % one_dot == 0:
-                print("#", end="")
-        print("\nLoad train image Done: {}".format(name))
     else:
         for num in range(1, len(os.listdir('gray_testdata/'+font_list[0]))+1):
             for name in font_list:
                 data_list.append(np.array(Image.open('gray_testdata/'+name+'/'+str(num)+'.jpg')))
-        print("Load test image Done: {}".format(name))
     data = np.array(data_list)
     data = data.reshape(-1, img_size)
     print("Done")
@@ -136,4 +130,4 @@ def load_mydata(normalize=True, flatten=True, one_hot_label=False):
 
 
 if __name__ == '__main__':
-    init_mnist()
+    init_mydataset()

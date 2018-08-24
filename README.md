@@ -1,1 +1,2 @@
-Absolute_font_feeling
+# 絶対フォント感ニューラルネットワーク
+『ゼロから作るDeep Learning』を元にフォントの判別をするネットワークを作りました
