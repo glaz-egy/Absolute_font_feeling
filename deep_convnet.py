@@ -2,9 +2,14 @@
 import sys, os
 sys.path.append(os.pardir)  # 親ディレクトリのファイルをインポートするための設定
 import pickle
-import cupy as np
+import numpy as np
 from collections import OrderedDict
 from layers import *
+"""
+import cupy as np
+np.cuda.set_allocator(np.cuda.MemoryPool().malloc)
+np.add.at = np.scatter_add
+"""
 
 font2num = {'HGRSGU':0,
             'JGTR00M':1,

@@ -1,7 +1,11 @@
 # coding: utf-8
+import numpy as np
+
+"""
 import cupy as np
 np.cuda.set_allocator(np.cuda.MemoryPool().malloc)
 np.add.at = np.scatter_add
+"""
 
 font2num = {'HGRSGU':0,
             'JGTR00M':1,

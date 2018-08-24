@@ -25,23 +25,28 @@ font_list = []
 for name in os.listdir('fonts'):
     font_list.append(os.path.splitext(name)[0])
 
-train_num = 60000
-test_num = 10000
 img_dim = (1, 28, 28)
 img_size = 784
 
+def img_show(img):
+    pil_img = Image.fromarray(np.uint8(img))
+    pil_img.show()
+
 def _load_label(train=False):
     label_list = []
-    for name in font_list:
-        if train:
-            for num in range(1, len(os.listdir('datas/'+name))+1):
+    if train:
+        file_num = len(os.listdir('gray_datas/'+font_list[0]))+1
+        one_dot = int(file_num * 0.05)
+        for num in range(1, file_num):
+            for name in font_list:
                 label_list.append(font2num[name])
-        else:
-            for num in range(1, len(os.listdir('testdata/'+name))+1):
+            print("Load train label Done: {}".format(name))
+    else:
+        for num in range(1, len(os.listdir('testdata/'+font_list[0]))+1):
+            for name in font_list:
                 label_list.append(font2num[name])
-        print("Load label Done: {}".format(name))
+            print("Load test label Done: {}".format(name))
     labels = np.array(label_list)
-    print(len(label_list))
     print("Done")
 
     return labels
@@ -49,17 +54,22 @@ def _load_label(train=False):
 def _load_img(train=False):
     data_list = []
 
-    for name in font_list:
-        if train:
-            for num in range(1, len(os.listdir('gray_datas/'+name))+1):
+    if train:
+        file_num = len(os.listdir('gray_datas/'+font_list[0]))+1
+        one_dot = int(file_num * 0.05)
+        for num in range(1, file_num):
+            for name in font_list:
                 data_list.append(np.array(Image.open('gray_datas/'+name+'/'+str(num).zfill(7)+'.jpg')))
-        else:
-            for num in range(1, len(os.listdir('gray_testdata/'+name))+1):
+            if num % one_dot == 0:
+                print("#", end="")
+        print("\nLoad train image Done: {}".format(name))
+    else:
+        for num in range(1, len(os.listdir('gray_testdata/'+font_list[0]))+1):
+            for name in font_list:
                 data_list.append(np.array(Image.open('gray_testdata/'+name+'/'+str(num)+'.jpg')))
-        print("Load image Done: {}".format(name))
+        print("Load test image Done: {}".format(name))
     data = np.array(data_list)
     data = data.reshape(-1, img_size)
-    print(len(data_list))
     print("Done")
 
     return data
@@ -73,11 +83,11 @@ def _convert_numpy():
 
     return dataset
 
-def init_mnist():
+def init_mydataset():
     dataset = _convert_numpy()
     print("Creating pickle file ...")
     with open(save_file, 'wb') as f:
-        pickle.dump(dataset, f, -1)
+        pickle.dump(dataset, f)
     print("Done!")
 
 def _change_one_hot_label(X):
@@ -88,7 +98,7 @@ def _change_one_hot_label(X):
     return T
 
 
-def load_mydata(normalize=True, flatten=True):
+def load_mydata(normalize=True, flatten=True, one_hot_label=False):
     """MNISTデータセットの読み込み
 
     Parameters
@@ -104,7 +114,7 @@ def load_mydata(normalize=True, flatten=True):
     (訓練画像, 訓練ラベル), (テスト画像, テストラベル)
     """
     if not os.path.exists(save_file):
-        init_mnist()
+        init_mydataset()
 
     with open(save_file, 'rb') as f:
         dataset = pickle.load(f)
@@ -113,7 +123,11 @@ def load_mydata(normalize=True, flatten=True):
         for key in ('train_img', 'test_img'):
             dataset[key] = dataset[key].astype(np.float32)
             dataset[key] /= 255.0
-
+    
+    if one_hot_label:
+        dataset['train_label'] = _change_one_hot_label(dataset['train_label'])
+        dataset['test_label'] = _change_one_hot_label(dataset['test_label'])
+        
     if not flatten:
          for key in ('train_img', 'test_img'):
             dataset[key] = dataset[key].reshape(-1, 1, 28, 28)

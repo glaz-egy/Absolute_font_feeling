@@ -1,10 +1,12 @@
 # coding: utf-8
-import cupy as np
+import numpy as np
 from functions import *
 from util import im2col, col2im
+"""
+import cupy as np
 np.cuda.set_allocator(np.cuda.MemoryPool().malloc)
 np.add.at = np.scatter_add
-
+"""
 
 class Relu:
     def __init__(self):

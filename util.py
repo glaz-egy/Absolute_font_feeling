@@ -1,7 +1,10 @@
 # coding: utf-8
+import numpy as np
+"""
 import cupy as np
 np.cuda.set_allocator(np.cuda.MemoryPool().malloc)
 np.add.at = np.scatter_add
+"""
 
 def smooth_curve(x):
     """損失関数のグラフを滑らかにするために用いる

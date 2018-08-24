@@ -1,10 +1,11 @@
 # coding: utf-8
 import sys, os
 sys.path.append(os.pardir)  # 親ディレクトリのファイルをインポートするための設定
-import cupy as np
+import numpy as np
 from optimizer import *
-np.cuda.set_allocator(np.cuda.MemoryPool().malloc)
-np.add.at = np.scatter_add
+#import cupy as np
+#np.cuda.set_allocator(np.cuda.MemoryPool().malloc)
+#np.add.at = np.scatter_add
 
 class Trainer:
     """ニューラルネットの訓練を行うクラス
@@ -61,7 +62,7 @@ class Trainer:
                 x_test_sample, t_test_sample = self.x_test[:t], self.t_test[:t]
                 
             train_acc = self.network.accuracy(x_train_sample, t_train_sample)
-            test_acc = self.network.accuracy(x_test_sample, t_test_sample)
+            test_acc = self.network.accuracy(x_test_sample, t_test_sample, batch_size=10)
             self.train_acc_list.append(train_acc)
             self.test_acc_list.append(test_acc)
 
