@@ -12,13 +12,13 @@ np.cuda.set_allocator(np.cuda.MemoryPool().malloc)
 np.add.at = np.scatter_add
 """
 
-max_epochs = 15
+max_epochs = 20
 
 (x_train, t_train), (x_test, t_test) = load_mydata(flatten=False)
 
 network = DeepConvNet()  
 trainer = Trainer(network, x_train, t_train, x_test, t_test,
-                  epochs=20, mini_batch_size=100,
+                  epochs=max_epochs, mini_batch_size=100,
                   optimizer='Adam', optimizer_param={'lr':0.001},
                   evaluate_sample_num_per_epoch=1000)
 trainer.train()

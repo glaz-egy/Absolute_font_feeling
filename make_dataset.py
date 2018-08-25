@@ -3,6 +3,7 @@ import os.path
 import pickle
 import os
 import numpy as np
+from tqdm import tqdm
 from PIL import Image
 
 font2num = {'HGRSGU':0,
@@ -35,13 +36,13 @@ def img_show(img):
 def _load_label(train=False):
     label_list = []
     if train:
-        file_num = len(os.listdir('gray_datas/'+font_list[0]))+1
-        one_dot = int(file_num * 0.05)
-        for num in range(1, file_num):
+        file_num = len(os.listdir('train_gray/'+font_list[0]))+1
+        for num in tqdm(range(1, file_num)):
             for name in font_list:
                 label_list.append(font2num[name])
     else:
-        for num in range(1, len(os.listdir('testdata/'+font_list[0]))+1):
+        file_num = len(os.listdir('test_gray/'+font_list[0]))+1
+        for num in tqdm(range(1, file_num)):
             for name in font_list:
                 label_list.append(font2num[name])
     labels = np.array(label_list)
@@ -51,17 +52,16 @@ def _load_label(train=False):
 
 def _load_img(train=False):
     data_list = []
-
     if train:
-        file_num = len(os.listdir('gray_datas/'+font_list[0]))+1
-        one_dot = int(file_num * 0.05)
-        for num in range(1, file_num):
+        file_num = len(os.listdir('train_gray/'+font_list[0]))+1
+        for num in tqdm(range(1, file_num)):
             for name in font_list:
-                data_list.append(np.array(Image.open('gray_datas/'+name+'/'+str(num).zfill(7)+'.jpg')))
+                data_list.append(np.array(Image.open('train_gray/'+name+'/'+str(num).zfill(7)+'.jpg')))
     else:
-        for num in range(1, len(os.listdir('gray_testdata/'+font_list[0]))+1):
+        file_num = len(os.listdir('test_gray/'+font_list[0]))+1
+        for num in tqdm(range(1, file_num)):
             for name in font_list:
-                data_list.append(np.array(Image.open('gray_testdata/'+name+'/'+str(num)+'.jpg')))
+                data_list.append(np.array(Image.open('test_gray/'+name+'/'+str(num).zfill(3)+'.jpg')))
     data = np.array(data_list)
     data = data.reshape(-1, img_size)
     print("Done")
